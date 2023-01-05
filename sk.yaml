@@ -1,0 +1,584 @@
+openapi: 3.1.0
+info:
+  title: Skútan API
+  version: '1.0'
+  summary: Grunnþjónustur skipaskrár
+  description: Grunnþjónustur skipaskrár
+  contact:
+    name: Lárus Long
+    url: 'https://www.samgongustofa.is'
+    email: larus.long@samgongustofa.is
+  license:
+    name: Samgöngustofa 2022
+    url: 'https://spdx.org/licenses/Unlicense.html'
+servers:
+  - url: 'http://localhost:6942/skutan/v1'
+    description: Non-working url for prototype
+paths:
+  /ships:
+    get:
+      description: Skilar lista yfir öll skip á aðalskipaskrá
+      summary: Ships on main registry
+      operationId: get-ship-list
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShipList'
+              examples:
+                Example 1:
+                  value:
+                    ships:
+                      - registrationNumber: 0
+                        name: string
+                        isOpen: true
+                        regionNumber: 0
+                        usageType: string
+                        operationArea: string
+                        imoNumber: string
+                        status: string
+                        identification:
+                          homeHarbor: string
+                          regionName: string
+                          regionAcronym: string
+                          regionNumber: string
+                          callSign: string
+                        mainMeasurements:
+                          length: 0
+                          mostLength: 0
+                          width: 0
+                          depth: 0
+                          draft: 0
+                          bruttoGrt: 0
+                          bruttoWeightTons: 0
+                          nettoWeightTons: 0
+      tags:
+        - Ships
+    parameters: []
+  '/ships/{registrationNumber}':
+    description: Skilar ýtarupplýsingum um skip
+    parameters:
+      - schema:
+          type: integer
+        name: registrationNumber
+        in: path
+        required: true
+        description: Auðkennisnúmer skips í skipaskrá
+    get:
+      summary: Ship details
+      operationId: get-shipdetail-for-registrationNumber
+      description: Skilar ýtarupplýsingum um skip
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShipDetails'
+            examples: {}
+      tags:
+        - Crew
+        - Sailors
+        - Ships
+  /ships/types:
+    get:
+      description: Skilar lista af tegundum skipa
+      summary: Ship types
+      tags:
+        - ShipTypes
+      responses: {}
+      operationId: get-ships-types
+  '/ships/seaworthyness_valid_after/{date}':
+    parameters:
+      - schema:
+          type: string
+          format: date
+        name: date
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags:
+        - Ships
+      responses: {}
+      operationId: get-ships-seaworthyness_valid_after-date
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShipList'
+            examples:
+              Example 1:
+                value:
+                  ships:
+                    - registrationNumber: 0
+                      name: string
+                      isOpen: true
+                      regionNumber: 0
+                      usageType: string
+                      operationArea: string
+                      imoNumber: string
+                      status: string
+                      identification:
+                        homeHarbor: string
+                        regionName: string
+                        regionAcronym: string
+                        regionNumber: string
+                        callSign: string
+                      mainMeasurements:
+                        length: 0
+                        mostLength: 0
+                        width: 0
+                        depth: 0
+                        draft: 0
+                        bruttoGrt: 0
+                        bruttoWeightTons: 0
+                        nettoWeightTons: 0
+  '/ships/14_hour_rule/{status}':
+    get:
+      summary: Your GET endpoint
+      tags:
+        - Ships
+      responses: {}
+      operationId: get-ships-valid_14_hour_rule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShipList'
+            examples:
+              Example 1:
+                value:
+                  ships:
+                    - registrationNumber: 0
+                      name: string
+                      isOpen: true
+                      regionNumber: 0
+                      usageType: string
+                      operationArea: string
+                      imoNumber: string
+                      status: string
+                      identification:
+                        homeHarbor: string
+                        regionName: string
+                        regionAcronym: string
+                        regionNumber: string
+                        callSign: string
+                      mainMeasurements:
+                        length: 0
+                        mostLength: 0
+                        width: 0
+                        depth: 0
+                        draft: 0
+                        bruttoGrt: 0
+                        bruttoWeightTons: 0
+                        nettoWeightTons: 0
+    parameters:
+      - schema:
+          type: string
+          enum:
+            - valid
+            - invalid
+        name: status
+        in: path
+        required: true
+  '/ships/{registrationNumber}/crew':
+    parameters:
+      - schema:
+          type: string
+        name: registrationNumber
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags:
+        - Crew
+      responses: {}
+      operationId: get-ships-registrationNumber-crew
+  '/sailors/{registrationNumber}':
+    parameters:
+      - schema:
+          type: string
+        name: registrationNumber
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      responses: {}
+      operationId: get-sailors-registrationNumber
+components:
+  schemas:
+    Ship:
+      title: Ship
+      type: object
+      examples: []
+      properties:
+        registrationNumber:
+          type: integer
+          minimum: 0
+          description: Skipaskrárnúmer
+        name:
+          type: string
+          description: Nafn skips
+        isOpen:
+          type: boolean
+          description: Opið / lokað
+        regionNumber:
+          type: integer
+          minimum: 0
+          description: Umdæmisnúmer
+        usageType:
+          type: string
+          description: Tegund skips
+        operationArea:
+          type: string
+          description: Farsvip
+        imoNumber:
+          type: string
+          description: IMO númer
+        status:
+          type: string
+          description: Staða í skipaskrá
+        identification:
+          type: object
+          description: Kennimerki
+          properties:
+            homeHarbor:
+              type: string
+              description: Heimahöfn
+            regionName:
+              type: string
+              description: Umdæmi
+            regionAcronym:
+              type: string
+              description: Umdæmisbókstafir
+            regionNumber:
+              type: string
+              description: Umdæmisnúmer
+            callSign:
+              type: string
+              description: Kallmerki
+        mainMeasurements:
+          type: object
+          description: Aðalmál
+          properties:
+            length:
+              type: number
+              minimum: 0
+              description: Lengd(m)
+            mostLength:
+              type: number
+              minimum: 0
+              description: Mesta lengd(m)
+            width:
+              type: number
+              minimum: 0
+              description: Breidd
+            depth:
+              type: number
+              minimum: 0
+              description: Mótuð dýpt miðskipa
+            draft:
+              type: number
+              minimum: 0
+              description: Mótuð djúprista miðskipa
+            bruttoGrt:
+              type: number
+              minimum: 0
+              description: Brúttórúmlestir
+            bruttoWeightTons:
+              type: number
+              minimum: 0
+              description: Brúttótonn
+            nettoWeightTons:
+              type: number
+              minimum: 0
+              description: Nettótonn
+    ShipDetails:
+      title: ShipDetails
+      type: object
+      examples:
+        - registrationNumber: 0
+          name: string
+          isOpen: true
+          regionNumber: 0
+          usageType: string
+          operationArea: string
+          imoNumber: string
+          status: string
+          isLegallyStaffed: true
+          seaworhiness:
+            isValid: true
+            validFrom: '2019-08-24'
+            validTo: '2019-08-24'
+            extendedValidTo: '2019-08-24'
+          identification:
+            homeHarbor: string
+            regionName: string
+            regionAcronym: string
+            regionNumber: string
+            callSign: string
+          mainMeasurements:
+            length: 0
+            mostLength: 0
+            width: 0
+            depth: 0
+            draft: 0
+            bruttoGrt: 0
+            bruttoWeightTons: 0
+            nettoWeightTons: 0
+          crew:
+            - registrationNumber: string
+              '':
+                nationalIdentificationNumber: string
+                name: string
+                isForeign: string
+          owners:
+            - percentage: 0
+              nationalIdentificationNumber: stringstri
+              name: string
+              isForeign: string
+              registrationDate: '2019-08-24T14:15:22Z'
+              lastUpdated: '2019-08-24T14:15:22Z'
+              documentTitle: string
+          passengerPermits:
+            - registrationNumber: string
+              validFrom: string
+              validTo: string
+              operationArea:
+                icelandicName: string
+                englishName: string
+              passengerInsurance:
+                insuranceCompany: string
+                numberOfInsuredPassengers: string
+                validFrom: string
+                validTo: string
+                insuranceAmountIsk: string
+                comment: string
+      properties:
+        registrationNumber:
+          type: integer
+          minimum: 0
+          description: Skipaskrárnúmer
+        name:
+          type: string
+          description: Nafn skips
+        isOpen:
+          type: boolean
+          description: Opið / lokað
+        regionNumber:
+          type: integer
+          minimum: 0
+          description: Umdæmisnúmer
+        usageType:
+          type: string
+          description: Tegund skips
+        operationArea:
+          type: string
+          description: Farsvip
+        imoNumber:
+          type: string
+          description: IMO númer
+        status:
+          type: string
+          description: Staða í skipaskrá
+        isLegallyStaffed:
+          type: boolean
+        seaworhiness:
+          type: object
+          properties:
+            isValid:
+              type: boolean
+            validFrom:
+              type: string
+              format: date
+            validTo:
+              type: string
+              format: date
+            extendedValidTo:
+              type: string
+              format: date
+        identification:
+          type: object
+          description: Kennimerki
+          properties:
+            homeHarbor:
+              type: string
+              description: Heimahöfn
+            regionName:
+              type: string
+              description: Umdæmi
+            regionAcronym:
+              type: string
+              description: Umdæmisbókstafir
+            regionNumber:
+              type: string
+              description: Umdæmisnúmer
+            callSign:
+              type: string
+              description: Kallmerki
+        mainMeasurements:
+          type: object
+          description: Aðalmál
+          properties:
+            length:
+              type: number
+              minimum: 0
+              description: Lengd(m)
+            mostLength:
+              type: number
+              minimum: 0
+              description: Mesta lengd(m)
+            width:
+              type: number
+              minimum: 0
+              description: Breidd
+            depth:
+              type: number
+              minimum: 0
+              description: Mótuð dýpt miðskipa
+            draft:
+              type: number
+              minimum: 0
+              description: Mótuð djúprista miðskipa
+            bruttoGrt:
+              type: number
+              minimum: 0
+              description: Brúttórúmlestir
+            bruttoWeightTons:
+              type: number
+              minimum: 0
+              description: Brúttótonn
+            nettoWeightTons:
+              type: number
+              minimum: 0
+              description: Nettótonn
+        crew:
+          type: array
+          items:
+            $ref: '#/components/schemas/CrewMember'
+        owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/Owner'
+        passengerPermits:
+          type: array
+          items:
+            $ref: '#/components/schemas/PassengerPermit'
+    ShipList:
+      title: ShipList
+      type: object
+      examples:
+        - ships:
+            - registrationNumber: 0
+              name: string
+              isOpen: true
+              regionNumber: 0
+              usageType: string
+              operationArea: string
+              imoNumber: string
+              status: string
+              identification:
+                homeHarbor: string
+                regionName: string
+                regionAcronym: string
+                regionNumber: string
+                callSign: string
+              mainMeasurements:
+                length: 0
+                mostLength: 0
+                width: 0
+                depth: 0
+                draft: 0
+                bruttoGrt: 0
+                bruttoWeightTons: 0
+                nettoWeightTons: 0
+      properties:
+        ships:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ship'
+    Owner:
+      title: Owner
+      type: object
+      properties:
+        percentage:
+          type: integer
+          maximum: 100
+          minimum: 0
+        nationalIdentificationNumber:
+          type: string
+          pattern: '[0-9]'
+          maxLength: 10
+          minLength: 10
+        name:
+          type: string
+        isForeign:
+          type: string
+        registrationDate:
+          type: string
+          format: date-time
+        lastUpdated:
+          type: string
+          format: date-time
+        documentTitle:
+          type: string
+    Sailor:
+      title: Sailor
+      type: object
+      properties:
+        nationalIdentificationNumber:
+          type: string
+        name:
+          type: string
+        isForeign:
+          type: string
+    CrewMember:
+      title: CrewMember
+      type: object
+      properties:
+        registrationNumber:
+          type: string
+        '':
+          $ref: '#/components/schemas/Sailor'
+    PassengerPermit:
+      title: PassengerPermit
+      type: object
+      properties:
+        registrationNumber:
+          type: string
+        validFrom:
+          type: string
+        validTo:
+          type: string
+        operationArea:
+          type: object
+          properties:
+            icelandicName:
+              type: string
+            englishName:
+              type: string
+        passengerInsurance:
+          type: object
+          properties:
+            insuranceCompany:
+              type: string
+            numberOfInsuredPassengers:
+              type: string
+            validFrom:
+              type: string
+            validTo:
+              type: string
+            insuranceAmountIsk:
+              type: string
+            comment:
+              type: string
+  securitySchemes: {}
+tags:
+  - name: Crew
+  - name: Sailors
+  - name: Ships
+  - name: ShipTypes
