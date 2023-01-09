@@ -1,0 +1,1154 @@
+openapi: 3.0.0
+x-stoplight:
+  id: 1kq82t6c1rbt9
+info:
+  title: Skútan API
+  version: '1.2'
+  description: Grunnþjónustur skipaskrár
+  contact:
+    name: Lárus Long
+    url: 'https://www.samgongustofa.is'
+    email: larus.long@samgongustofa.is
+  license:
+    name: Samgöngustofa 2022
+    url: 'https://spdx.org/licenses/Unlicense.html'
+servers:
+  - url: 'http://localhost:6942/skutan/v1'
+    description: Non-working url for prototype
+paths:
+  /ships:
+    get:
+      description: Skilar lista yfir öll skip á aðalskipaskrá
+      summary: Ships on main registry
+      operationId: get-ship-list
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ships:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShipSummary'
+              examples:
+                Example 1:
+                  value:
+                    ships:
+                      - registrationNumber: 0
+                        name: string
+                        isOpen: true
+                        regionNumber: 0
+                        usageType: string
+                        operationArea: string
+                        imoNumber: string
+                        status: string
+                        identification:
+                          homeHarbor: string
+                          regionName: string
+                          regionAcronym: string
+                          regionNumber: string
+                          callSign: string
+                        mainMeasurements:
+                          length: 0
+                          mostLength: 0
+                          width: 0
+                          depth: 0
+                          draft: 0
+                          bruttoGrt: 0
+                          bruttoWeightTons: 0
+                          nettoWeightTons: 0
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Ships
+      security:
+        - OAuth2: []
+    parameters: []
+  '/ships/{registrationNumber}':
+    description: Skilar ýtarupplýsingum um skip
+    parameters:
+      - schema:
+          type: integer
+        name: registrationNumber
+        in: path
+        required: true
+        description: Auðkennisnúmer skips
+    get:
+      summary: Ship details
+      operationId: get-shipdetail-for-registrationNumber
+      description: Skilar ýtarupplýsingum um skip
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShipDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Ships
+      security:
+        - OAuth2: []
+  /ships/types:
+    get:
+      description: Skilar lista af tegundum skipa
+      summary: Ship types
+      tags:
+        - Ship types
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  shipTypes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShipType'
+              examples:
+                Example 1:
+                  value:
+                    shipTypes:
+                      - registrationNumber: 0
+                        code: string
+                        name_icelandic: string
+                        name_english: string
+                        isRecreationalShip: true
+                        isFishingShip: true
+                        isTransportShip: true
+                        isPassengerShip: true
+                        isOtherShip: true
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      operationId: get-ships-types
+      security:
+        - OAuth2: []
+  '/ships/seaworthyness_valid_at/{date}':
+    parameters:
+      - schema:
+          type: string
+          format: date
+        name: date
+        in: path
+        required: true
+        description: Valid at date
+    get:
+      summary: Seaworthyness is valid at given date
+      tags:
+        - Ships
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ships:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShipSummary'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      operationId: get-ships-seaworthyness_valid_after-date
+      description: Ships seaworthyness is valid at given date
+      security:
+        - OAuth2: []
+  /ships/14_hour_rule/qualify:
+    get:
+      summary: Ships that qualify for the 14 hour rule
+      tags:
+        - Ships
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ships:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShipSummary'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      operationId: get-ships-valid_14_hour_rule
+      description: List of ships that qualify for the 14 hour rule base on the status
+      security:
+        - OAuth2: []
+    parameters: []
+  /ships/14_hour_rule/do_not_qualify:
+    get:
+      summary: Ships that do not qualify for the 14 hour rule
+      tags:
+        - Ships
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ships:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShipSummary'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      operationId: get-ships-invalid_14_hour_rule
+      description: List of ships that do not qualify   for the 14 hour rule base on the status
+      security:
+        - OAuth2: []
+    parameters: []
+  '/ships/{registrationNumber}/crew_registrations/{date_from}/{date_to}':
+    parameters:
+      - schema:
+          type: string
+        name: registrationNumber
+        in: path
+        required: true
+        description: Auðkennisnúmer skips
+      - schema:
+          type: string
+          format: date
+        name: date_from
+        in: path
+        required: true
+        description: Dagsetning frá og með
+      - schema:
+          type: string
+          format: date
+        name: date_to
+        in: path
+        required: true
+        description: Dagsetning til og með
+    get:
+      summary: Lögskráningardagar fyrir valið skip á tímabili
+      tags:
+        - Crew
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrewRegistrationsOverPeriod'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      operationId: get-ships-registrationNumber-crew
+      description: Lögskráningardagar fyrir valið skip á tímabili
+      security:
+        - OAuth2: []
+  '/ships/{registrationNumber}/insurance':
+    parameters:
+      - schema:
+          type: string
+        name: registrationNumber
+        in: path
+        required: true
+        description: Auðkennisnúmer skips
+    post:
+      summary: Register a new insurance on a given ship
+      operationId: post-ships-registrationNumber-insurance
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShipInsurance'
+        '303':
+          description: 'Identical insurance is already registered as valid on this ship '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShipInsurance'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestNewShipInsurance'
+        description: ''
+      description: Register a new insurance on a given ship
+      tags:
+        - Insurance companies
+      security:
+        - OAuth2: []
+    put:
+      summary: Update a particular insurance on a given ship
+      operationId: put-ships-registrationNumber-insurance
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShipInsurance'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestUpdateShipInsurance'
+      tags:
+        - Insurance companies
+      description: Update a particular insurance on a given ship
+      security:
+        - OAuth2: []
+  /oauth/token:
+    post:
+      summary: Client login
+      operationId: post-oauth-refresh
+      tags:
+        - Authentication
+      description: Requests an access token using client credentials flow.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessTokenRequest'
+        description: ''
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessTokenResponse'
+              examples: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    parameters: []
+components:
+  schemas:
+    ShipSummary:
+      title: Ship
+      type: object
+      example: {}
+      x-stoplight:
+        id: 2e0e5dd59ac3a
+      properties:
+        shipRegistrationNumber:
+          type: integer
+          minimum: 0
+          description: Skipaskrárnúmer
+        name:
+          type: string
+          description: Nafn skips
+        isOpen:
+          type: boolean
+          description: Opið / lokað
+        regionNumber:
+          type: integer
+          minimum: 0
+          description: Umdæmisnúmer
+        usageType:
+          type: string
+          description: Tegund skips
+        operationArea:
+          type: string
+          description: Farsvip
+        imoNumber:
+          type: string
+          description: IMO númer
+        status:
+          type: string
+          description: Staða í skipaskrá
+        identification:
+          type: object
+          description: Kennimerki
+          properties:
+            homeHarbor:
+              type: string
+              description: Heimahöfn
+            regionName:
+              type: string
+              description: Umdæmi
+            regionAcronym:
+              type: string
+              description: Umdæmisbókstafir
+            regionNumber:
+              type: string
+              description: Umdæmisnúmer
+            callSign:
+              type: string
+              description: Kallmerki
+        mainMeasurements:
+          type: object
+          description: Aðalmál
+          properties:
+            length:
+              type: number
+              minimum: 0
+              description: Lengd(m)
+            mostLength:
+              type: number
+              minimum: 0
+              description: Mesta lengd(m)
+            width:
+              type: number
+              minimum: 0
+              description: Breidd
+            depth:
+              type: number
+              minimum: 0
+              description: Mótuð dýpt miðskipa
+            draft:
+              type: number
+              minimum: 0
+              description: Mótuð djúprista miðskipa
+            bruttoGrt:
+              type: number
+              minimum: 0
+              description: Brúttórúmlestir
+            bruttoWeightTons:
+              type: number
+              minimum: 0
+              description: Brúttótonn
+            nettoWeightTons:
+              type: number
+              minimum: 0
+              description: Nettótonn
+    ShipDetails:
+      title: ShipDetails
+      x-stoplight:
+        id: 1d949a7913e1a
+      type: object
+      x-examples:
+        Example 1:
+          registrationNumber: 0
+          name: string
+          isOpen: true
+          regionNumber: 0
+          usageType: string
+          operationArea: string
+          imoNumber: string
+          status: string
+          isLegallyStaffed: true
+          seaworhiness:
+            isValid: true
+            validFrom: '2019-08-24'
+            validTo: '2019-08-24'
+            extendedValidTo: '2019-08-24'
+          identification:
+            homeHarbor: string
+            regionName: string
+            regionAcronym: string
+            regionNumber: string
+            callSign: string
+          mainMeasurements:
+            length: 0
+            mostLength: 0
+            width: 0
+            depth: 0
+            draft: 0
+            bruttoGrt: 0
+            bruttoWeightTons: 0
+            nettoWeightTons: 0
+          crew:
+            - registrationNumber: string
+              '':
+                nationalIdentificationNumber: string
+                name: string
+                isForeign: string
+          owners:
+            - percentage: 0
+              nationalIdentificationNumber: stringstri
+              name: string
+              isForeign: string
+              registrationDate: '2019-08-24T14:15:22Z'
+              lastUpdated: '2019-08-24T14:15:22Z'
+              documentTitle: string
+          passengerPermits:
+            - registrationNumber: string
+              validFrom: string
+              validTo: string
+              operationArea:
+                icelandicName: string
+                englishName: string
+              passengerInsurance:
+                insuranceCompany: string
+                numberOfInsuredPassengers: string
+                validFrom: string
+                validTo: string
+                insuranceAmountIsk: string
+                comment: string
+          insurances:
+            - registrationNumber: 0
+              validFrom: '2019-08-24'
+              validTo: '2019-08-24'
+              numberOfInsured: string
+              insurance:
+                registrationNumber: 0
+                name: string
+                code: string
+              insuranceCompany:
+                registrationNumber: 0
+                name: string
+                nationalIdentificationNumber: string
+      properties:
+        shipRegistrationNumber:
+          type: integer
+          minimum: 0
+          description: Skipaskrárnúmer
+        name:
+          type: string
+          description: Nafn skips
+        isOpen:
+          type: boolean
+          description: Opið / lokað
+        regionNumber:
+          type: integer
+          minimum: 0
+          description: Umdæmisnúmer
+        usageType:
+          type: string
+          description: Tegund skips
+        operationArea:
+          type: string
+          description: Farsvip
+        imoNumber:
+          type: string
+          description: IMO númer
+        status:
+          type: string
+          description: Staða í skipaskrá
+        isLegallyStaffed:
+          type: boolean
+        seaworhiness:
+          type: object
+          properties:
+            isValid:
+              type: boolean
+            validFrom:
+              type: string
+              format: date
+            validTo:
+              type: string
+              format: date
+            extendedValidTo:
+              type: string
+              format: date
+        identification:
+          type: object
+          description: Kennimerki
+          properties:
+            homeHarbor:
+              type: string
+              description: Heimahöfn
+            regionName:
+              type: string
+              description: Umdæmi
+            regionAcronym:
+              type: string
+              description: Umdæmisbókstafir
+            regionNumber:
+              type: string
+              description: Umdæmisnúmer
+            callSign:
+              type: string
+              description: Kallmerki
+        mainMeasurements:
+          type: object
+          description: Aðalmál
+          properties:
+            length:
+              type: number
+              minimum: 0
+              description: Lengd(m)
+            mostLength:
+              type: number
+              minimum: 0
+              description: Mesta lengd(m)
+            width:
+              type: number
+              minimum: 0
+              description: Breidd
+            depth:
+              type: number
+              minimum: 0
+              description: Mótuð dýpt miðskipa
+            draft:
+              type: number
+              minimum: 0
+              description: Mótuð djúprista miðskipa
+            bruttoGrt:
+              type: number
+              minimum: 0
+              description: Brúttórúmlestir
+            bruttoWeightTons:
+              type: number
+              minimum: 0
+              description: Brúttótonn
+            nettoWeightTons:
+              type: number
+              minimum: 0
+              description: Nettótonn
+        crew:
+          type: array
+          items:
+            $ref: '#/components/schemas/CrewMember'
+        owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/Owner'
+        passengerPermits:
+          type: array
+          items:
+            $ref: '#/components/schemas/PassengerPermit'
+        insurances:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShipInsurance'
+    Owner:
+      title: Owner
+      x-stoplight:
+        id: 839my1n47bzyf
+      type: object
+      properties:
+        percentage:
+          type: integer
+          maximum: 100
+          minimum: 0
+        nationalIdentificationNumber:
+          type: string
+          pattern: '[0-9]'
+          maxLength: 10
+          minLength: 10
+        name:
+          type: string
+        isForeign:
+          type: string
+        registrationDate:
+          type: string
+          format: date-time
+        lastUpdated:
+          type: string
+          format: date-time
+        documentTitle:
+          type: string
+    Sailor:
+      title: Sailor
+      x-stoplight:
+        id: wxcq9ko6tigu4
+      type: object
+      properties:
+        nationalIdentificationNumber:
+          type: string
+        name:
+          type: string
+        isForeign:
+          type: string
+    CrewMember:
+      title: CrewMember
+      x-stoplight:
+        id: un1r0el493f1s
+      type: object
+      properties:
+        crewRegistrationNumber:
+          type: string
+        '':
+          $ref: '#/components/schemas/Sailor'
+    PassengerPermit:
+      title: PassengerPermit
+      x-stoplight:
+        id: g7gchr36hcerv
+      type: object
+      properties:
+        shipRegistrationNumber:
+          type: string
+        operationArea:
+          type: object
+          properties:
+            icelandicName:
+              type: string
+            englishName:
+              type: string
+        passengerInsurance:
+          $ref: '#/components/schemas/ShipInsurance'
+    ShipType:
+      title: ShipType
+      x-stoplight:
+        id: zzobw25mpfdkn
+      type: object
+      properties:
+        shipTypeRegistrationNumber:
+          type: integer
+          minimum: 0
+        code:
+          type: string
+        name_icelandic:
+          type: string
+        name_english:
+          type: string
+        isRecreationalShip:
+          type: boolean
+        isFishingShip:
+          type: boolean
+        isTransportShip:
+          type: boolean
+        isPassengerShip:
+          type: boolean
+        isOtherShip:
+          type: boolean
+    InsuranceType:
+      title: InsuranceType
+      x-stoplight:
+        id: 4e7874f1c1c52
+      type: object
+      x-examples: {}
+      properties:
+        insuranceTypeRegistrationNumber:
+          type: integer
+          minimum: 0
+        name:
+          type: string
+        code:
+          type: string
+    InsuranceCompany:
+      title: InsuranceCompany
+      x-stoplight:
+        id: itwzzxzidnxbu
+      type: object
+      properties:
+        insuranceCompanyRegistrationNumber:
+          type: integer
+          minimum: 0
+        name:
+          type: string
+        nationalIdentificationNumber:
+          type: string
+    ShipInsurance:
+      title: ShipInsurance
+      x-stoplight:
+        id: d8fsnhgc98003
+      type: object
+      properties:
+        insuranceRegistrationNumber:
+          type: integer
+          minimum: 0
+        validFrom:
+          type: string
+          format: date
+        validTo:
+          type: string
+          format: date
+        numberOfInsured:
+          type: integer
+          minimum: 0
+        comment:
+          type: string
+        amountISK:
+          type: number
+          minimum: 0
+        insuranceType:
+          $ref: '#/components/schemas/InsuranceType'
+        insuranceCompany:
+          $ref: '#/components/schemas/InsuranceCompany'
+    CrewRegistrationsOverPeriod:
+      title: CrewRegistrationsOverPeriod
+      x-stoplight:
+        id: d1tr5w9z85zym
+      type: object
+      properties:
+        shipRegistrationNumber:
+          type: integer
+          minimum: 0
+        periodFromInclusive:
+          type: string
+          format: date
+        periodToInclusive:
+          type: string
+          format: date
+        totalRegistrationDays:
+          type: integer
+          minimum: 0
+    RequestNewShipInsurance:
+      title: NewShipInsurance
+      type: object
+      properties:
+        shipRegistrationNumber:
+          type: integer
+          minimum: 0
+        insuranceTypeRegistrationNumber:
+          type: integer
+          minimum: 0
+        numberOfInsured:
+          type: integer
+          minimum: 0
+        amountISK:
+          type: number
+          minimum: 0
+        validFromInclusive:
+          type: string
+          format: date
+        validToInclusive:
+          type: string
+          format: date
+        comment:
+          type: string
+      required:
+        - shipRegistrationNumber
+        - insuranceTypeRegistrationNumber
+        - numberOfInsured
+        - amountISK
+        - validFromInclusive
+        - validToInclusive
+    RequestUpdateShipInsurance:
+      title: UpdateShipInsurance
+      type: object
+      properties:
+        shipRegistrationNumber:
+          type: integer
+          minimum: 0
+        insuranceRegistrationNumber:
+          type: integer
+          minimum: 0
+        numberOfInsured:
+          type: integer
+          minimum: 0
+        amountISK:
+          type: number
+          minimum: 0
+        validFromInclusive:
+          type: string
+          format: date
+        validToInclusive:
+          type: string
+          format: date
+        comment:
+          type: string
+      required:
+        - shipRegistrationNumber
+        - insuranceRegistrationNumber
+        - numberOfInsured
+        - amountISK
+        - validFromInclusive
+        - validToInclusive
+      x-stoplight:
+        id: 574ccb5edbfe8
+    ErrorResponse:
+      title: ErrorResponse
+      x-stoplight:
+        id: e53bae227f9f6
+      type: object
+      description: Error response containing a list of all errors
+      properties:
+        code:
+          type: string
+        description:
+          type: string
+        datetime:
+          type: string
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error'
+    Error:
+      title: Error
+      x-stoplight:
+        id: bs0yxrpscsfeb
+      type: object
+      description: Single error
+      properties:
+        traceId:
+          type: string
+        parameterName:
+          type: string
+        description:
+          type: string
+    AccessTokenRequest:
+      title: AccessTokenRequest
+      x-stoplight:
+        id: ne2rq2z460oog
+      type: object
+      properties:
+        grant_type:
+          type: string
+          default: client_credentials
+          enum:
+            - client_credentials
+          example: client_credentials
+        client_id:
+          type: string
+        client_secret:
+          type: string
+      description: Access token tequest
+    AccessTokenResponse:
+      title: AccessTokenResponse
+      x-stoplight:
+        id: 0f5dlahu29n8w
+      type: object
+      description: Access token response
+      properties:
+        token_type:
+          type: string
+          default: Bearer
+          example: Bearer
+        expires_in:
+          type: integer
+          minimum: 0
+        access_token:
+          type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes: {}
+      description: ''
+  examples: {}
+  requestBodies: {}
+  responses: {}
+tags:
+  - name: Authentication
+    description: Authentication methods
+  - name: Crew
+    description: 'Crew specific methods, available to all without scope'
+  - name: Insurance companies
+    description: Methods only available for insurance companies
+  - name: Ships
+    description: 'Ship specific methods, available to all without scope'
+  - name: Ship types
+    description: 'Ship types specific methods, available to all without scope'
